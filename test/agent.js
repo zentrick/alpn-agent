@@ -1,11 +1,13 @@
 const test = require('ava')
 const util = require('util')
-const {
-  HTTP2_HEADER_PATH,
-  HTTP2_HEADER_STATUS
-} = require('http2').constants
 const H2Agent = require('../')
-const { Servers, createTestPaths, expectTlsCacheStats } = require('./helpers')
+const {
+  Servers,
+  createTestPaths,
+  expectTlsCacheStats,
+  h1request,
+  h2request
+} = require('./helpers')
 
 let servers
 
@@ -27,7 +29,8 @@ test.after.always(async t => {
 
 test.beforeEach(t => {
   const agent = new H2Agent({
-    tlsSessionCache: new H2Agent.TLSSessionCache()
+    tlsSessionCache: new H2Agent.TLSSessionCache(),
+    rejectUnauthorized: false
   })
   // Promisify the agent `createConnection` function from the Node API
   // so we can easily call it from our tests
@@ -123,27 +126,32 @@ test(`ALPN negotiation fails on an unresponsive host`, async t => {
   await t.throws(t.context.agent.negotiateALPN(FAILING_HOST))
 })
 
+test('can perform an https request with agent', async t => {
+  const {host, port, rejectUnauthorized} = servers.https
+  const options = {
+    agent: t.context.agent,
+    host,
+    port,
+    rejectUnauthorized,
+    path: '/200'
+  }
+  await h1request(t, options)
+})
+
+test('can perform an https request with agent after ALPN negotiation', async t => {
+  const {host, port, rejectUnauthorized} = servers.https
+  const options = {
+    agent: t.context.agent,
+    host,
+    port,
+    rejectUnauthorized,
+    path: '/200'
+  }
+  t.is(await t.context.agent.negotiateALPN(options), 'http/1.1')
+  await h1request(t, options)
+})
+
 test('can perform an h2 request', async t => {
   const session = await t.context.agent.createH2Session(servers.h2)
-  const request = session.request({
-    [HTTP2_HEADER_PATH]: '/200'
-  })
-  await Promise.all([
-    new Promise((resolve, reject) => {
-      request.on('response', (headers) => {
-        t.is(headers[HTTP2_HEADER_STATUS], 200)
-        resolve()
-      })
-    }),
-    new Promise((resolve, reject) => {
-      let data = ''
-      request.on('data', chunk => {
-        data += chunk
-      })
-      request.on('end', () => {
-        t.is(data, 'OK')
-        resolve()
-      })
-    })
-  ])
+  await h2request(t, session)
 })
