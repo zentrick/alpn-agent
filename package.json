@@ -1,6 +1,6 @@
 {
   "name": "@zentrick/alpn-agent",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Negotiates ALPN and handles transparent https and h2 connections",
   "main": "index.js",
   "author": "Zentrick nv (https://www.zentrick.com/)",
