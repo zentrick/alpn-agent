@@ -6,7 +6,8 @@
   },
   "scripts": {
     "lint": "standard",
-    "test": "yarn run lint && nyc ava"
+    "test": "yarn run lint && nyc ava",
+    "test:ci": "yarn run lint && nyc ava --tap | tap-xunit >$CIRCLE_TEST_REPORTS/junit.xml"
   },
   "dependencies": {
     "debug": "^3.1.0",
@@ -17,7 +18,8 @@
     "get-port": "^4.0.0",
     "nyc": "^11.7.1",
     "pem": "^1.12.5",
-    "standard": "^11.0.1"
+    "standard": "^11.0.1",
+    "tap-xunit": "^2.3.0"
   },
   "ava": {
     "files": [

@@ -1,0 +1,53 @@
+version: 2.0
+
+jobs:
+  "node-10":
+    docker:
+      - image: circleci/node:10-stretch
+    working_directory: ~/alpn-agent
+    steps:
+      - run:
+          name: Install Yarn
+          command: |
+            sudo apt-get update
+            sudo apt-get install apt-transport-https
+            sudo rm -f /usr/local/bin/yarn
+            curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+            echo 'deb https://dl.yarnpkg.com/debian/ stable main' | sudo tee /etc/apt/sources.list.d/yarn.list
+            sudo apt-get update
+            sudo apt-get install --no-install-recommends yarn=1.9.4-1
+      - checkout
+      - restore_cache:
+          keys:
+            - n10-{{ arch }}-deps-{{ checksum "yarn.lock" }}
+            # fallback to using the latest cache if no exact match is found
+            - n10-{{ arch }}-deps-
+      - run:
+          name: Install dependencies
+          command: yarn --frozen-lockfile
+      - save_cache:
+          paths:
+            - node_modules
+            - ~/.cache/yarn
+          key: n10-{{ arch }}-deps-{{ checksum "yarn.lock" }}
+      - run:
+          name: Provision test result directory
+          command: mkdir -p /tmp/test-results
+      - run:
+          name: Run tests
+          command: yarn run test:ci
+          environment:
+            CIRCLE_TEST_REPORTS: /tmp/test-results
+      - store_test_results:
+          path: /tmp/test-results
+          when: always
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
+          when: always
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - "node-10"
