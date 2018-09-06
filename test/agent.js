@@ -1,6 +1,6 @@
 const test = require('ava')
 const util = require('util')
-const H2Agent = require('../')
+const ALPNAgent = require('../')
 const {
   Servers,
   createTestPaths,
@@ -28,8 +28,8 @@ test.after.always(async t => {
 })
 
 test.beforeEach(t => {
-  const agent = new H2Agent({
-    tlsSessionCache: new H2Agent.TLSSessionCache(),
+  const agent = new ALPNAgent({
+    tlsSessionCache: new ALPNAgent.TLSSessionCache(),
     rejectUnauthorized: false
   })
   // Promisify the agent `createConnection` function from the Node API
@@ -111,12 +111,12 @@ test.afterEach.always(async t => {
 })
 
 test('initializes with global TLS session cache by default', t => {
-  const agent = new H2Agent()
-  t.is(agent.tlsSessionCache, H2Agent.TLSSessionCache.global)
+  const agent = new ALPNAgent()
+  t.is(agent.tlsSessionCache, ALPNAgent.TLSSessionCache.global)
 })
 
 test('creates a TLS session cache instance if none is provided', t => {
-  const agent = new H2Agent({
+  const agent = new ALPNAgent({
     tlsSessionCache: null
   })
   t.truthy(agent.tlsSessionCache)
