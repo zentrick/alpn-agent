@@ -1,14 +1,27 @@
 {
   "name": "@zentrick/alpn-agent",
   "version": "0.0.0",
+  "description": "Negotiates ALPN and handles transparent https and h2 connections",
+  "main": "index.js",
+  "author": "Zentrick nv (https://www.zentrick.com/)",
+  "contributors": [
+    "Pieter Mees <pieter.mees@zentrick.com>"
+  ],
   "engines": {
     "node": ">=8"
   },
+  "license": "MIT",
+  "files": [
+    "lib/",
+    "index.js"
+  ],
   "scripts": {
     "lint": "standard",
     "test": "yarn run lint && nyc ava",
     "test:ci": "yarn run lint && nyc ava --tap | tap-xunit >$CIRCLE_TEST_REPORTS/junit.xml"
   },
+  "repository": "zentrick/alpn-agent",
+  "bugs": "https://github.com/zentrick/alpn-agent/issues",
   "dependencies": {
     "debug": "^3.1.0",
     "lru-cache": "^4.1.3"
