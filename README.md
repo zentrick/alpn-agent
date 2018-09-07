@@ -55,10 +55,3 @@ if (options.protocol === 'https') {
 - You can provide an optional `lookup` function through the `ALPNAgent`
   constructor options if you'd like to redirect DNS lookups to your own
   function. This can be useful if you'd like to cache DNS responses locally.
-
-# Todo
-
-- [ ] Handle closing of stale `h2` sessions.
-- [ ] Apply keep-alive logic to `h2` sockets.
-- [ ] Consider whether to open multiple `h2` session when `maxConcurrentStreams`
-  is reached.
