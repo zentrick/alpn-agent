@@ -1,5 +1,5 @@
 const pem = require('pem')
-const {promisify} = require('util')
+const { promisify } = require('util')
 
 const pemCreateCertificate = promisify(pem.createCertificate)
 
@@ -11,7 +11,7 @@ const createCertificate = async () => {
     days: DURATION,
     selfSigned: true
   })
-  const {clientKey, certificate} = await pemCreateCertificate({
+  const { clientKey, certificate } = await pemCreateCertificate({
     serviceCertificate: rootCert.certificate,
     serviceKey: rootCert.serviceKey,
     serial: Date.now(),

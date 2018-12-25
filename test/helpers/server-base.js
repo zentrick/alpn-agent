@@ -1,4 +1,4 @@
-const {promisify} = require('util')
+const { promisify } = require('util')
 const getPort = require('get-port')
 const debug = require('debug')
 

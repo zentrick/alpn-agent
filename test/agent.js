@@ -59,20 +59,20 @@ test.afterEach.always(async t => {
     sessionType: 'TLSSocket',
     createFn: 'promisifiedAgentCreate'
   }
-].forEach(({proto, alpn, sessionType, createFn}) => {
+].forEach(({ proto, alpn, sessionType, createFn }) => {
   test(`negotiates an ${proto} connection`, async t => {
     t.is(await t.context.agent.negotiateALPN(servers[proto]), alpn)
-    expectTlsCacheStats(t, {hits: 0, misses: 1, evictions: 0})
+    expectTlsCacheStats(t, { hits: 0, misses: 1, evictions: 0 })
   })
 
   test(`${proto} session fails on an unresponsive host`, async t => {
-    await t.throws(t.context.agent[createFn](FAILING_HOST))
+    await t.throwsAsync(t.context.agent[createFn](FAILING_HOST))
   })
 
   test(`creates an ${proto} session with negotiation`, async t => {
     t.is(await t.context.agent.negotiateALPN(servers[proto]), alpn)
     const session = await t.context.agent[createFn](servers[proto])
-    expectTlsCacheStats(t, {hits: 0, misses: 1, evictions: 0})
+    expectTlsCacheStats(t, { hits: 0, misses: 1, evictions: 0 })
     t.is(session.constructor.name, sessionType)
   })
 
@@ -83,30 +83,30 @@ test.afterEach.always(async t => {
 
   test(`does not renegotiate ALPN if result is known to be ${proto}`, async t => {
     t.is(await t.context.agent.negotiateALPN(servers[proto]), alpn)
-    expectTlsCacheStats(t, {hits: 0, misses: 1, evictions: 0})
+    expectTlsCacheStats(t, { hits: 0, misses: 1, evictions: 0 })
     t.is(await t.context.agent.negotiateALPN(servers[proto]), alpn)
-    expectTlsCacheStats(t, {hits: 0, misses: 1, evictions: 0})
+    expectTlsCacheStats(t, { hits: 0, misses: 1, evictions: 0 })
   })
 
   test(`reuses cached TLS session info for ${proto}`, async t => {
     t.is(await t.context.agent.negotiateALPN(servers[proto]), alpn)
-    expectTlsCacheStats(t, {hits: 0, misses: 1, evictions: 0})
+    expectTlsCacheStats(t, { hits: 0, misses: 1, evictions: 0 })
     t.context.agent.destroy()
     t.is(await t.context.agent.negotiateALPN(servers[proto]), alpn)
-    expectTlsCacheStats(t, {hits: 1, misses: 1, evictions: 0})
+    expectTlsCacheStats(t, { hits: 1, misses: 1, evictions: 0 })
   })
 
   test(`evicts TLS session cache on ${proto} transmission error`, async t => {
     const session = await t.context.agent[createFn](servers[proto])
-    expectTlsCacheStats(t, {hits: 0, misses: 1, evictions: 0})
+    expectTlsCacheStats(t, { hits: 0, misses: 1, evictions: 0 })
     const closed = new Promise((resolve, reject) => {
       session.once('close', resolve)
     })
     session.destroy(new Error('transmission error'))
     await closed
-    expectTlsCacheStats(t, {hits: 0, misses: 1, evictions: 1})
+    expectTlsCacheStats(t, { hits: 0, misses: 1, evictions: 1 })
     await t.context.agent[createFn](servers[proto])
-    expectTlsCacheStats(t, {hits: 0, misses: 2, evictions: 1})
+    expectTlsCacheStats(t, { hits: 0, misses: 2, evictions: 1 })
   })
 })
 
@@ -123,11 +123,11 @@ test('creates a TLS session cache instance if none is provided', t => {
 })
 
 test(`ALPN negotiation fails on an unresponsive host`, async t => {
-  await t.throws(t.context.agent.negotiateALPN(FAILING_HOST))
+  await t.throwsAsync(t.context.agent.negotiateALPN(FAILING_HOST))
 })
 
 test('can perform an https request with agent', async t => {
-  const {host, port, rejectUnauthorized} = servers.https
+  const { host, port, rejectUnauthorized } = servers.https
   const options = {
     agent: t.context.agent,
     host,
@@ -139,7 +139,7 @@ test('can perform an https request with agent', async t => {
 })
 
 test('can perform an https request with agent after ALPN negotiation', async t => {
-  const {host, port, rejectUnauthorized} = servers.https
+  const { host, port, rejectUnauthorized } = servers.https
   const options = {
     agent: t.context.agent,
     host,
