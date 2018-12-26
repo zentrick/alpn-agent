@@ -5,6 +5,7 @@ const {
   Servers,
   createTestPaths,
   expectH1Stats,
+  expectH2Stats,
   expectTlsCacheStats,
   h1request,
   h2request
@@ -183,6 +184,14 @@ test('reuses free H1 socket on subsequent requests', async t => {
 test('can perform an h2 request', async t => {
   const session = await t.context.agent.createH2Session(servers.h2)
   await h2request(t, session)
+})
+
+test('reuses H2 session on subsequent requests', async t => {
+  const session1 = await t.context.agent.createH2Session(servers.h2)
+  expectH2Stats(t, { h2Hits: 0, h2Misses: 1 })
+  const session2 = await t.context.agent.createH2Session(servers.h2)
+  t.is(session1, session2)
+  expectH2Stats(t, { h2Hits: 1, h2Misses: 1 })
 })
 
 test('can pass h2 connection settings', async t => {
