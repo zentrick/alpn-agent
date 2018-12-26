@@ -85,13 +85,6 @@ test.afterEach.always(async t => {
     t.is(session.constructor.name, sessionType)
   })
 
-  test(`does not renegotiate ALPN if result is known to be ${proto}`, async t => {
-    t.is(await t.context.agent.negotiateALPN(servers[proto]), alpn)
-    expectTlsCacheStats(t, { hits: 0, misses: 1, evictions: 0 })
-    t.is(await t.context.agent.negotiateALPN(servers[proto]), alpn)
-    expectTlsCacheStats(t, { hits: 0, misses: 1, evictions: 0 })
-  })
-
   test(`reuses cached TLS session info for ${proto}`, async t => {
     t.is(await t.context.agent.negotiateALPN(servers[proto]), alpn)
     expectTlsCacheStats(t, { hits: 0, misses: 1, evictions: 0 })
