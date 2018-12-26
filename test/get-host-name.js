@@ -1,5 +1,5 @@
 const test = require('ava')
-const getHostName = require('../lib/get-host-name')
+const getHostName = require('../lib/util/get-host-name')
 
 test('prefers given hostname', t => {
   t.is(getHostName({
