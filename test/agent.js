@@ -4,6 +4,7 @@ const ALPNAgent = require('../')
 const {
   Servers,
   createTestPaths,
+  expectH1Stats,
   expectTlsCacheStats,
   h1request,
   h2request
@@ -162,6 +163,21 @@ test('can perform an https request with agent after ALPN negotiation', async t =
   }
   t.is(await t.context.agent.negotiateALPN(options), 'http/1.1')
   await h1request(t, options)
+})
+
+test('reuses free H1 socket on subsequent requests', async t => {
+  const { host, port, rejectUnauthorized } = servers.https
+  const options = {
+    agent: t.context.agent,
+    host,
+    port,
+    rejectUnauthorized,
+    path: '/200'
+  }
+  await h1request(t, options)
+  expectH1Stats(t, { h1Hits: 0, h1Misses: 1 })
+  await h1request(t, options)
+  expectH1Stats(t, { h1Hits: 1, h1Misses: 1 })
 })
 
 test('can perform an h2 request', async t => {
