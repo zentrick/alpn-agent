@@ -1,4 +1,3 @@
-const EventEmitter = require('events')
 const debug = require('debug')
 const http2 = require('http2')
 const getName = require('./get-name')
@@ -13,9 +12,8 @@ const _options = Symbol('options')
 const _origins = Symbol('origins')
 const _idle = Symbol('idle')
 
-class Pool extends EventEmitter {
+class Pool {
   constructor (options) {
-    super()
     this[_options] = {
       keepAlive: false,
       maxSessions: 8,
