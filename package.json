@@ -1,31 +1,16 @@
 {
-  "name": "@zentrick/alpn-agent",
-  "version": "0.1.2",
-  "description": "Negotiates ALPN and handles transparent https and h2 connections",
-  "main": "index.js",
-  "author": "Zentrick nv (https://www.zentrick.com/)",
-  "contributors": [
-    "Pieter Mees <pieter.mees@zentrick.com>"
-  ],
+  "private": true,
   "engines": {
-    "node": ">=8"
+    "node": ">=10",
+    "yarn": ">=1.12.3"
   },
-  "license": "MIT",
-  "files": [
-    "lib/",
-    "index.js"
+  "workspaces": [
+    "packages/*"
   ],
   "scripts": {
     "lint": "standard",
     "test": "yarn run lint && nyc ava",
     "test:ci": "yarn run lint && nyc ava --tap | tap-xunit >$CIRCLE_TEST_REPORTS/junit.xml"
-  },
-  "repository": "zentrick/alpn-agent",
-  "bugs": "https://github.com/zentrick/alpn-agent/issues",
-  "dependencies": {
-    "debug": "^4.1.1",
-    "lru-cache": "^5.1.1",
-    "p-defer": "^1.0.0"
   },
   "devDependencies": {
     "ava": "^1.0.1",
@@ -35,20 +20,26 @@
     "standard": "^12.0.1",
     "tap-xunit": "^2.3.0"
   },
+  "standard": {
+    "ignore": [
+      "**/node_modules"
+    ]
+  },
   "ava": {
     "files": [
-      "test/**/*.js"
+      "packages/*/test",
+      "test"
     ],
     "sources": [
-      "lib/**/*.js",
-      "index.js"
+      "packages/*/lib/**/*.js",
+      "packages/*/index.js"
     ]
   },
   "nyc": {
     "all": true,
     "include": [
-      "lib/**/*.js",
-      "index.js"
+      "packages/*/lib/**/*.js",
+      "packages/*/index.js"
     ]
   }
 }

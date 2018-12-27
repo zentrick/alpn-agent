@@ -7,7 +7,7 @@ const {
 const trackTlsSessions = require('./track-tls-sessions')
 const hasAvailableStreams = require('./has-available-streams')
 const closeSession = require('./close-session')
-const removeFromArray = require('../util/remove-from-array')
+const removeFromArray = require('./util/remove-from-array')
 
 const _name = Symbol('name')
 const _pool = Symbol('pool')

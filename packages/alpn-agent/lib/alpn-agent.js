@@ -1,15 +1,15 @@
 const tls = require('tls')
 const { Agent } = require('https')
 const debug = require('debug')
+const TLSSessionCache = require('@zentrick/tls-session-cache')
 const SocketCache = require('./util/socket-cache')
-const TLSSessionCache = require('./tls-session-cache')
-const h2 = require('./h2')
 const {
   ALPN_H1,
   ALPN_H2,
   DEFAULT_PROTOCOLS
 } = require('./constants')
 const { _name } = require('./symbols')
+const createSession = require('./create-session')
 const prepareOptions = require('./prepare-options')
 const DEFAULT_OPTIONS = require('./default-options')
 
@@ -132,7 +132,7 @@ class ALPNAgent extends Agent {
   _cacheSocket (options, socket) {
     DEBUG(`caching ${socket.alpnProtocol} connection`)
     const [cache, session] = socket.alpnProtocol === ALPN_H2
-      ? [this[_h2], h2.createSession(options, socket)]
+      ? [this[_h2], createSession(options, socket)]
       : [this[_h1], socket]
     session.once('error', () => {
       cache.remove(options[_name], session)

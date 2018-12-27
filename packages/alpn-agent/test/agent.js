@@ -9,7 +9,7 @@ const {
   expectTlsCacheStats,
   h1request,
   h2request
-} = require('./helpers')
+} = require('../../../test/helpers')
 
 let servers
 

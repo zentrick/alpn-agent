@@ -3,8 +3,9 @@ const debug = require('debug')
 const http2 = require('http2')
 const getName = require('./get-name')
 const Origin = require('./pool-origin')
-const { ALPN_H2 } = require('../constants')
-const TLSSessionCache = require('../tls-session-cache')
+const TLSSessionCache = require('@zentrick/tls-session-cache')
+
+const ALPN_H2 = 'h2'
 
 const DEBUG = debug('h2::pool')
 

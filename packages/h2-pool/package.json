@@ -1,0 +1,24 @@
+{
+  "name": "@zentrick/h2-pool",
+  "version": "0.0.0",
+  "main": "index.js",
+  "author": "Zentrick nv (https://www.zentrick.com/)",
+  "contributors": [
+    "Pieter Mees <pieter.mees@zentrick.com>"
+  ],
+  "engines": {
+    "node": ">=8"
+  },
+  "license": "MIT",
+  "files": [
+    "lib/",
+    "index.js"
+  ],
+  "repository": "zentrick/alpn-agent",
+  "bugs": "https://github.com/zentrick/alpn-agent/issues",
+  "dependencies": {
+    "@zentrick/tls-session-cache": "^0.0.0",
+    "debug": "^4.1.1",
+    "p-defer": "^1.0.0"
+  }
+}

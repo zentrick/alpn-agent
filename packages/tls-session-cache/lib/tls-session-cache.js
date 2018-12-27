@@ -1,6 +1,7 @@
 const LRU = require('lru-cache')
 const debug = require('debug')
-const { DEFAULT_TLS_SESSION_CACHE_SIZE } = require('./constants')
+
+const DEFAULT_TLS_SESSION_CACHE_SIZE = 4096
 
 const DEBUG = debug('alpn-agent::tls-session-cache')
 

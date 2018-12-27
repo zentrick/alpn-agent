@@ -1,5 +1,5 @@
 const test = require('ava')
-const getName = require('../../lib/h2/get-name')
+const getName = require('../lib/get-name')
 
 const testMacro = (t, authority = t.title, options) => {
   t.snapshot(getName(authority, options))

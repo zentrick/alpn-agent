@@ -1,0 +1,23 @@
+{
+  "name": "@zentrick/tls-session-cache",
+  "version": "0.0.0",
+  "main": "index.js",
+  "author": "Zentrick nv (https://www.zentrick.com/)",
+  "contributors": [
+    "Pieter Mees <pieter.mees@zentrick.com>"
+  ],
+  "engines": {
+    "node": ">=8"
+  },
+  "license": "MIT",
+  "files": [
+    "lib/",
+    "index.js"
+  ],
+  "repository": "zentrick/alpn-agent",
+  "bugs": "https://github.com/zentrick/alpn-agent/issues",
+  "dependencies": {
+    "debug": "^4.1.1",
+    "lru-cache": "^5.1.1"
+  }
+}

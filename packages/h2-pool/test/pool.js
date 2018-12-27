@@ -1,11 +1,11 @@
 const test = require('ava')
-const H2Pool = require('../../lib/h2/pool')
+const H2Pool = require('../')
 const {
   Servers,
   createTestPaths,
   h2request,
   onEvent
-} = require('../helpers')
+} = require('../../../test/helpers')
 
 let servers
 

@@ -1,4 +1,4 @@
-const TLSSessionCache = require('./tls-session-cache')
+const TLSSessionCache = require('@zentrick/tls-session-cache')
 
 module.exports = {
   // TLS Session Cache that will be used by ALPNAgent.
