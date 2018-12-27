@@ -5,6 +5,7 @@ const expectH2Stats = require('./expect-h2-stats')
 const expectTlsCacheStats = require('./expect-tls-cache-stats')
 const h1request = require('./h1-request')
 const h2request = require('./h2-request')
+const onEvent = require('./on-event')
 
 module.exports = {
   Servers,
@@ -13,5 +14,6 @@ module.exports = {
   expectH2Stats,
   expectTlsCacheStats,
   h1request,
-  h2request
+  h2request,
+  onEvent
 }

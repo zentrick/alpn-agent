@@ -1,5 +1,5 @@
 const test = require('ava')
-const SocketCache = require('../lib/socket-cache')
+const SocketCache = require('../lib/util/socket-cache')
 
 test.beforeEach(t => {
   t.context.cache = new SocketCache()

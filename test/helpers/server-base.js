@@ -2,16 +2,17 @@ const { promisify } = require('util')
 const getPort = require('get-port')
 const debug = require('debug')
 
-const DEBUG = debug('alpn-agent::test-server')
-
 const host = 'localhost'
 
 module.exports = async (name, proto, createFn, port = null) => {
+  const DEBUG = debug(`alpn-agent::test-server::${name}`)
+
   const s = createFn()
 
   let socketId = 0
   let sockets = {}
   s.on('connection', (sock) => {
+    DEBUG('new connection')
     const id = socketId++
     sockets[id] = sock
     sock.on('close', () => {

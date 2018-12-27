@@ -13,6 +13,7 @@ module.exports = async (t, session) => {
         t.is(headers[HTTP2_HEADER_STATUS], 200)
         resolve()
       })
+      request.on('error', reject)
     }),
     new Promise((resolve, reject) => {
       let data = ''
@@ -23,6 +24,9 @@ module.exports = async (t, session) => {
         t.is(data, 'OK')
         resolve()
       })
+    }),
+    new Promise((resolve, reject) => {
+      request.on('close', resolve)
     })
   ])
 }

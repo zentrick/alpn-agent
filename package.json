@@ -24,7 +24,8 @@
   "bugs": "https://github.com/zentrick/alpn-agent/issues",
   "dependencies": {
     "debug": "^4.1.1",
-    "lru-cache": "^5.1.1"
+    "lru-cache": "^5.1.1",
+    "p-defer": "^1.0.0"
   },
   "devDependencies": {
     "ava": "^1.0.1",
@@ -36,18 +37,18 @@
   },
   "ava": {
     "files": [
-      "test/*.js"
+      "test/**/*.js"
     ],
     "sources": [
-      "lib/*.js",
+      "lib/**/*.js",
       "index.js"
     ]
   },
   "nyc": {
     "all": true,
     "include": [
-      "index.js",
-      "lib/**/*.js"
+      "lib/**/*.js",
+      "index.js"
     ]
   }
 }
