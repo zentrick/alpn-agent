@@ -87,8 +87,9 @@ class Pool extends EventEmitter {
     session.ref()
   }
 
-  async getSession (authority, options) {
-    return this._getOrCreateOrigin(authority, options).get(authority, options)
+  async connect (authority, options) {
+    return this._getOrCreateOrigin(authority, options)
+      .connect(authority, options)
   }
 }
 

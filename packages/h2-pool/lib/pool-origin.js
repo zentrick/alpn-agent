@@ -134,7 +134,7 @@ class Origin {
     )
   }
 
-  async get (authority, options) {
+  async connect (authority, options) {
     return this._findActive() ||
       this._popIdle() ||
       this._createNew(authority, options) ||

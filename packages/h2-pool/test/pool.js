@@ -41,26 +41,26 @@ test.afterEach.always(async t => {
 })
 
 test('creates a new session', async t => {
-  const session = await t.context.pool.getSession(servers.h2.url)
+  const session = await t.context.pool.connect(servers.h2.url)
   t.truthy(session)
   t.is(t.context.pool.origins.size, 1)
 })
 
 test('allocates the same session multiple times', async t => {
-  const session1 = await t.context.pool.getSession(servers.h2.url)
-  const session2 = await t.context.pool.getSession(servers.h2.url)
+  const session1 = await t.context.pool.connect(servers.h2.url)
+  const session2 = await t.context.pool.connect(servers.h2.url)
   t.is(session1, session2)
 })
 
 test('failed connect attempts are not stored', async t => {
-  const session = await t.context.pool.getSession(servers.https.url)
+  const session = await t.context.pool.connect(servers.https.url)
   await t.throwsAsync(new Promise((resolve, reject) => {
     session.once('error', reject)
   }))
 })
 
 test('can perform an h2 request', async t => {
-  const session = await t.context.pool.getSession(servers.h2.url)
+  const session = await t.context.pool.connect(servers.h2.url)
   await h2request(t, session)
 })
 
@@ -70,7 +70,7 @@ test('can perform an h2 request without TLS session cache', async t => {
     tlsSessionCache: null,
     rejectUnauthorized: false
   })
-  const session = await pool.getSession(servers.h2.url)
+  const session = await pool.connect(servers.h2.url)
   await h2request(t, session)
   await pool.destroy()
 })
@@ -81,10 +81,10 @@ test('opens a new session when the old one is saturated', async t => {
     peerMaxConcurrentStreams: 1,
     rejectUnauthorized: false
   })
-  const session1 = await pool.getSession(servers.h2.url)
+  const session1 = await pool.connect(servers.h2.url)
   const req = h2request(t, session1)
   await onEvent(session1, 'connect')
-  const session2 = await pool.getSession(servers.h2.url)
+  const session2 = await pool.connect(servers.h2.url)
   t.not(session1, session2)
   await req
   await pool.destroy()
@@ -97,21 +97,21 @@ test('queues a request when all sessions are saturated', async t => {
     peerMaxConcurrentStreams: 1,
     rejectUnauthorized: false
   })
-  const session1 = await pool.getSession(servers.h2.url)
+  const session1 = await pool.connect(servers.h2.url)
   const req = h2request(t, session1)
   await onEvent(session1, 'connect')
-  const session2 = await pool.getSession(servers.h2.url)
+  const session2 = await pool.connect(servers.h2.url)
   t.is(session1, session2)
   await req
   await pool.destroy()
 })
 
 test('revives idle sessions', async t => {
-  const session1 = await t.context.pool.getSession(servers.h2.url)
+  const session1 = await t.context.pool.connect(servers.h2.url)
   expectOriginStats(t, t.context.pool, { sessions: 1, idleSessions: 0 })
   await h2request(t, session1)
   expectOriginStats(t, t.context.pool, { sessions: 1, idleSessions: 1 })
-  const session2 = await t.context.pool.getSession(servers.h2.url)
+  const session2 = await t.context.pool.connect(servers.h2.url)
   expectOriginStats(t, t.context.pool, { sessions: 1, idleSessions: 0 })
   t.is(session1, session2)
 })
@@ -121,11 +121,11 @@ test('closes idle sessions when keepAlive is false', async t => {
     keepAlive: false,
     rejectUnauthorized: false
   })
-  const session1 = await pool.getSession(servers.h2.url)
+  const session1 = await pool.connect(servers.h2.url)
   expectOriginStats(t, pool, { sessions: 1, idleSessions: 0 })
   await h2request(t, session1)
   expectOriginStats(t, pool, { sessions: 0, idleSessions: 0 })
-  const session2 = await pool.getSession(servers.h2.url)
+  const session2 = await pool.connect(servers.h2.url)
   expectOriginStats(t, pool, { sessions: 1, idleSessions: 0 })
   t.not(session1, session2)
   await pool.destroy()
