@@ -8,6 +8,7 @@ const trackTlsSessions = require('./track-tls-sessions')
 const hasAvailableStreams = require('./has-available-streams')
 const closeSession = require('./close-session')
 const removeFromArray = require('./util/remove-from-array')
+const { setSessionName } = require('./session-name')
 
 const _name = Symbol('name')
 const _pool = Symbol('pool')
@@ -45,12 +46,18 @@ class Origin {
     return session
   }
 
+  _evictIdle (session) {
+    removeFromArray(this[_idle], session)
+    this._closeSession(session)
+  }
+
   _popIdle () {
     if (this[_idle].length === 0) {
       return null
     }
     // Reuse most recently used session (pop from the back)
     const session = this[_idle].pop()
+    this[_pool]._popIdle(session)
     this[_active].push(session)
     this[_pool].reuseSession(session)
     this[_debug]('reusing idle session')
@@ -59,13 +66,21 @@ class Origin {
 
   _pushIdle (session) {
     removeFromArray(this[_active], session)
-    if (this[_pool].keepSessionAlive(session)) {
+    const keepAlive = this[_pool].keepSessionAlive(session)
+    if (keepAlive === false) {
+      this[_debug]('closing idle session due to disinterest')
+      this._closeSession(session)
+    } else if (this[_pool]._pushIdle(session) === false) {
+      this[_debug]('closing idle session due to lack of space')
+      this._closeSession(session)
+    } else {
       this[_debug]('remembering idle session')
       this[_idle].push(session)
-    } else {
-      this[_debug]('closing idle session')
-      session.close()
     }
+  }
+
+  _closeSession (session) {
+    session.close()
   }
 
   _createNew (authority, options) {
@@ -81,7 +96,7 @@ class Origin {
       ...options
     }
     const session = this[_pool].createSession(authority, options)
-    session[_name] = this[_name]
+    setSessionName(session, this[_name])
     trackActiveStreams(session, () => {
       if (!this._dequeue(session) && getActiveStreams(session) === 0) {
         this._pushIdle(session)

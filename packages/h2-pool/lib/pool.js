@@ -3,6 +3,8 @@ const http2 = require('http2')
 const getName = require('./get-name')
 const Origin = require('./pool-origin')
 const TLSSessionCache = require('@zentrick/tls-session-cache')
+const removeFromArray = require('./util/remove-from-array')
+const { getSessionName } = require('./session-name')
 
 const ALPN_H2 = 'h2'
 
@@ -42,6 +44,10 @@ class Pool {
     return this[_options].maxSessions
   }
 
+  get maxFreeSessions () {
+    return this[_options].maxFreeSessions
+  }
+
   _createOrigin (name) {
     const origin = new Origin(name, this)
     this[_origins].set(name, origin)
@@ -51,6 +57,34 @@ class Pool {
   _getOrCreateOrigin (authority, options) {
     const name = this.getName(authority, options)
     return this[_origins].get(name) || this._createOrigin(name)
+  }
+
+  _evictIdle () {
+    if (this[_idle].length > 0) {
+      const session = this[_idle].shift()
+      const name = getSessionName(session)
+      const origin = this[_origins].get(name)
+      return origin._evictIdle(session)
+    } else {
+      return false
+    }
+  }
+
+  _popIdle (session) {
+    removeFromArray(this[_idle], session)
+  }
+
+  _pushIdle (session) {
+    if (this[_idle].length === this.maxFreeSessions) {
+      // Kill the oldest idle session in favor of this more recent one
+      this._evictIdle()
+    }
+    if (this[_idle].length < this.maxFreeSessions) {
+      this[_idle].push(session)
+      return true
+    } else {
+      return false
+    }
   }
 
   async destroy () {

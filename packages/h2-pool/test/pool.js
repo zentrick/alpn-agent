@@ -118,13 +118,44 @@ test('revives idle sessions', async t => {
 
 test('closes idle sessions when keepAlive is false', async t => {
   const pool = new H2Pool({
-    keepAlive: false,
     rejectUnauthorized: false
   })
   const session1 = await pool.connect(servers.h2.url)
   expectOriginStats(t, pool, { sessions: 1, idleSessions: 0 })
   await h2request(t, session1)
   expectOriginStats(t, pool, { sessions: 0, idleSessions: 0 })
+  const session2 = await pool.connect(servers.h2.url)
+  expectOriginStats(t, pool, { sessions: 1, idleSessions: 0 })
+  t.not(session1, session2)
+  await pool.destroy()
+})
+
+test('closes idle sessions when maxFreeSessions is 0', async t => {
+  const pool = new H2Pool({
+    keepAlive: true,
+    maxFreeSessions: 0,
+    rejectUnauthorized: false
+  })
+  const session1 = await pool.connect(servers.h2.url)
+  expectOriginStats(t, pool, { sessions: 1, idleSessions: 0 })
+  await h2request(t, session1)
+  expectOriginStats(t, pool, { sessions: 0, idleSessions: 0 })
+  const session2 = await pool.connect(servers.h2.url)
+  expectOriginStats(t, pool, { sessions: 1, idleSessions: 0 })
+  t.not(session1, session2)
+  await pool.destroy()
+})
+
+test('evicts oldest idle sessions when maxFreeSessions is reached', async t => {
+  const pool = new H2Pool({
+    keepAlive: true,
+    maxFreeSessions: 1,
+    rejectUnauthorized: false
+  })
+  const session1 = await pool.connect(servers.h2.url)
+  expectOriginStats(t, pool, { sessions: 1, idleSessions: 0 })
+  await h2request(t, session1)
+  expectOriginStats(t, pool, { sessions: 0, idleSessions: 1 })
   const session2 = await pool.connect(servers.h2.url)
   expectOriginStats(t, pool, { sessions: 1, idleSessions: 0 })
   t.not(session1, session2)
