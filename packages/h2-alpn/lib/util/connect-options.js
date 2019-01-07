@@ -5,6 +5,7 @@ const DEFAULT_PORTS = {
 
 module.exports = (authority, options) => ({
   ...options,
+  path: null,
   host: authority.hostname || 'localhost',
   servername: authority.hostname || 'localhost',
   port: authority.port || DEFAULT_PORTS[authority.protocol]

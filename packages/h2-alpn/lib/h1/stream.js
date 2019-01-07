@@ -60,7 +60,8 @@ class H1Stream extends stream.Duplex {
         DEBUG('response received', res.statusCode)
         this[_response] = res
         const headers = createHeaders(res.statusCode, res.headers)
-        this.emit('response', headers)
+        const flags = 0
+        this.emit('response', headers, flags, res.rawHeaders)
         res.on('error', err => {
           DEBUG('error', err)
         })

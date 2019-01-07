@@ -76,15 +76,15 @@ class H2SessionProxy extends EventEmitter {
   }
 
   get localSettings () {
-    throw new Error('Not implemented')
+    throw new Error('localSettings property not implemented')
   }
 
   get originSet () {
-    throw new Error('Not implemented')
+    throw new Error('originSet property not implemented')
   }
 
   get pendingSettingsAck () {
-    throw new Error('Not implemented')
+    throw new Error('pendingSettingsAck property not implemented')
   }
 
   get remoteSettings () {
@@ -93,15 +93,15 @@ class H2SessionProxy extends EventEmitter {
   }
 
   get socket () {
-    throw new Error('Not implemented')
+    return new EventEmitter()
   }
 
   get state () {
-    throw new Error('Not implemented')
+    throw new Error('state property not implemented')
   }
 
   get type () {
-    throw new Error('Not implemented')
+    throw new Error('type property not implemented')
   }
 
   _getSession (condition = null) {
@@ -117,8 +117,8 @@ class H2SessionProxy extends EventEmitter {
   }
 
   _addSession (session) {
-    forwardEvents(session, this, FORWARDED_EVENTS, evt => {
-      DEBUG('event', evt)
+    forwardEvents(session, this, FORWARDED_EVENTS, (evt, ...args) => {
+      DEBUG(this.constructor.name, 'event', evt)
     })
     if (this[_reffed]) {
       session.ref()
@@ -165,11 +165,11 @@ class H2SessionProxy extends EventEmitter {
   }
 
   goaway () {
-    throw new Error('Not implemented')
+    throw new Error('goaway method not implemented')
   }
 
   ping () {
-    throw new Error('Not implemented')
+    throw new Error('ping method not implemented')
   }
 
   ref () {
@@ -178,11 +178,11 @@ class H2SessionProxy extends EventEmitter {
   }
 
   setTimeout () {
-    throw new Error('Not implemented')
+    throw new Error('setTimeout method not implemented')
   }
 
   settings () {
-    throw new Error('Not implemented')
+    throw new Error('settings method not implemented')
   }
 
   unref () {
@@ -191,7 +191,7 @@ class H2SessionProxy extends EventEmitter {
   }
 
   request (headers, options) {
-    DEBUG('request', headers)
+    DEBUG(this.constructor.name, 'request', headers)
     let session = null
     let streamProxy = null
     this._getAvailableSession(availableSession => {
