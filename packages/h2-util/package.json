@@ -1,5 +1,5 @@
 {
-  "name": "@zentrick/h2-pool",
+  "name": "@zentrick/h2-util",
   "version": "0.0.0",
   "main": "index.js",
   "author": "Zentrick nv (https://www.zentrick.com/)",
@@ -16,9 +16,6 @@
   ],
   "repository": "zentrick/alpn-agent",
   "bugs": "https://github.com/zentrick/alpn-agent/issues",
-  "dependencies": {
-    "@zentrick/h2-pooled-session": "^0.0.0",
-    "debug": "^4.1.1",
-    "p-defer": "^1.0.0"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }

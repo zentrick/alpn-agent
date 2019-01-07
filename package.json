@@ -40,6 +40,11 @@
     "include": [
       "packages/*/lib/**/*.js",
       "packages/*/index.js"
+    ],
+    "reporter": [
+      "lcov",
+      "text",
+      "text-summary"
     ]
   }
 }

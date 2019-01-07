@@ -1,9 +1,10 @@
 const LRU = require('lru-cache')
 const debug = require('debug')
+const { globalAgent } = require('https')
 
 const DEFAULT_TLS_SESSION_CACHE_SIZE = 4096
 
-const DEBUG = debug('alpn-agent::tls-session-cache')
+const DEBUG = debug('tls::session-cache')
 
 const _cache = Symbol('cache')
 const _hits = Symbol('hits')
@@ -22,6 +23,10 @@ class TLSSessionCache {
     return DEFAULT_TLS_SESSION_CACHE
   }
 
+  static getName (options) {
+    return globalAgent.getName(options)
+  }
+
   get hits () {
     return this[_hits]
   }
@@ -37,24 +42,24 @@ class TLSSessionCache {
   load (name) {
     const session = this[_cache].get(name)
     if (session != null) {
-      DEBUG(`hit`)
+      DEBUG(`hit`, name)
       this[_hits]++
       return session
     } else {
-      DEBUG(`miss`)
+      DEBUG(`miss`, name)
       this[_misses]++
       return null
     }
   }
 
   evict (name) {
-    DEBUG(`evict`)
+    DEBUG(`evict`, name)
     this[_evictions]++
     this[_cache].del(name)
   }
 
   save (name, session) {
-    DEBUG(`save`)
+    DEBUG(`save`, name, session != null)
     this[_cache].set(name, session)
   }
 }

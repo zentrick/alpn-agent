@@ -1,57 +1,42 @@
-# alpn-agent
+# Packages
 
-A helper library to deal with ALPN negotiation of TLS connections.
+The first attempt at integrating http and h2 involved the following packages:
+- `@zentrick/alpn-agent`
+- `@zentrick/h2-pool`
 
-Exposes an `ALPNAgent` class which inherits from `https.Agent` but extends it
-with the following:
-- `ALPNAgent#negotiateALPN(options)` which connects to the specified host and
-  negotiates the ALPN protocol, returning a `Promise` to the negotiated protocol
-  as a string.
-- `ALPNAgent#createH1Session(options)` which connects to the specified host and
-  negotiates an `http/1.1` TLS socket. Returns a `Promise` to a Node
-  `tls.TLSSocket`.
-- `ALPNAgent#createH2Session(options)` which connects to the specified host and
-  negotiates an `h2` session. Returns a `Promise` to a Node
-  `http2.ClientHttp2Session`.
+The second attempt resulted in the following packages:
+- `@zentrick/h2-alpn` provides an H2 implementation that transparently handles
+  both http and https connections, and transparently handles H1 and H2 servers
+  over https by doing ALPN negotiation. All of these scenarios are exposed
+  as an API that matches the native Node `http2` API.
+- `@zentrick/h2-pool` provides a pool management class that built on top of
+  `@zentrick/h2-pooled-session`. It will manage a list of origins and maintain
+  a maximum number of idle sessions across all origins. When that maximum is
+  reached it will evict the oldest session.
+- `@zentrick/h2-pooled-session` provides an H2 implementation in which one
+  session maps to multiple backend sessions, and manages stream allocation to
+  these backend sessions by accounting for each individual session's
+  `maxConcurrentStreams`.
+- `@zentrick/h2-util` contains a number of helper classes that deal with the
+  proxying of H2 sessions and streams.
+- `@zentrick/tls-session-cache` provides a helper class that deals with caching
+  of TLS sessions for faster connection setup times. In the Node https agents,
+  this is handled out of the box for you.
 
-# Use as a standard `Agent`
-
-Because `ALPNAgent` inherits from `https.Agent` you can use it as a drop-in
-replacement in any existing `https` request, without having to use the `h2`
-capabilities.
-
-# Use in "mixed mode"
-
-To use the library to its full potential, you'd follow the following pattern
-when performing an HTTP request:
-
+`h2-alpn` and `h2-pooled-session` can be used independently or combined. To use
+them together, you can do the following:
 ```js
-if (options.protocol === 'https') {
-  const alpnProto = await alpnAgent.negotiateALPN(options)
-  if (alpnProto === 'h2') {
-    const session = await alpnAgent.createH2Session(options)
-    // perform standard h2 request against this `ClientHttp2Session`
-  } else {
-    // perform standard https request with `agent` option set to the `ALPNAgent`
-    // instance
-  }
-} else {
-  // perform standard http request with `agent` option set to a standard
-  // `http.Agent` instance
-}
+const { connect } = require('@zentrick/h2-pooled-session')
+const session = connect(authority, {
+  createSession: require('@zentrick/h2-alpn').connect
+})
 ```
 
-# Optimizations
-
-- Calling `negotiateALPN` might establish a new socket to the remote host, this
-  socket will be remembered in a cache for future use when you perform a request
-  against this remote host.
-- Calling `negotiateALPN` will return without establishing a new connection, if
-  an existing negotiated connection is already available to provide the answer.
-- The `ALPNAgent` will maintain a TLS session cache for you which will enable
-  fast session resumption on subsequent connections.
-- By default, the Nagle algorithm will be disabled on all sockets by calling
-  `socket.setNoDelay(true)`.
-- You can provide an optional `lookup` function through the `ALPNAgent`
-  constructor options if you'd like to redirect DNS lookups to your own
-  function. This can be useful if you'd like to cache DNS responses locally.
+The same can be done to combine `h2-alpn` and `h2-pool` as follows:
+```js
+const Pool = require(`@zentrick/h2-pool`)
+const pool = new Pool({
+  keepAlive: true,
+  createSession: require('@zentrick/h2-alpn').connect
+})
+```
