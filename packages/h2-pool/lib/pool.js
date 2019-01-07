@@ -1,5 +1,5 @@
-const debug = require('debug')
 const { connect } = require('@zentrick/h2-pooled-session')
+const debug = require('debug')
 const getName = require('./get-name')
 
 const DEBUG = debug('h2::pool')

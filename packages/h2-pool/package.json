@@ -18,7 +18,6 @@
   "bugs": "https://github.com/zentrick/alpn-agent/issues",
   "dependencies": {
     "@zentrick/h2-pooled-session": "^0.0.0",
-    "debug": "^4.1.1",
-    "p-defer": "^1.0.0"
+    "debug": "^4.1.1"
   }
 }
