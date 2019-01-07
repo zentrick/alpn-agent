@@ -3,9 +3,25 @@ const Pool = require('@zentrick/h2-pool')
 const { connect: alpnConnect } = require('@zentrick/h2-alpn')
 const {
   Servers,
-  createTestPaths,
-  h2request
+  createTestPaths
 } = require('./helpers')
+const { extend: gotExtend } = require('got')
+const h2wrapper = require('http2-wrapper')
+
+const getAuthority = ({ protocol, host, port }) => `${protocol}//${host}`
+
+const createGot = pool => gotExtend({
+  hooks: {
+    beforeRequest: [
+      async options => {
+        options.session = pool.connect(getAuthority(options), options)
+        // HACK: otherwise http2-wrapper rejects our request
+        options.protocol = 'https:'
+        options.request = h2wrapper.request
+      }
+    ]
+  }
+})
 
 const PROTOS = ['h2', 'https', 'http']
 
@@ -38,8 +54,9 @@ test.afterEach.always(async t => {
 })
 
 PROTOS.forEach(proto => {
-  test(`can make an ${proto} request`, async t => {
-    const session = t.context.pool.connect(servers[proto].url)
-    await h2request(t, session)
+  test(`can make an ${proto} request through got`, async t => {
+    const got = createGot(t.context.pool)
+    const req = got(`${servers[proto].url}/200`)
+    await t.notThrowsAsync(req)
   })
 })

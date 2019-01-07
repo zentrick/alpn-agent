@@ -25,9 +25,6 @@ let servers
 test.before(async t => {
   servers = new Servers(PROTOS)
   await servers.start()
-  console.log('Test servers up at')
-  PROTOS.forEach(proto => console.log(`  - ${proto.padEnd(10)} ${servers[proto].url}`))
-  console.log()
   createTestPaths(servers)
 })
 
