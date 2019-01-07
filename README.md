@@ -1,10 +1,6 @@
 # Packages
 
-The first attempt at integrating http and h2 involved the following packages:
-- `@zentrick/alpn-agent`
-- `@zentrick/h2-pool`
-
-The second attempt resulted in the following packages:
+This repository contains the following packages:
 - `@zentrick/h2-alpn` provides an H2 implementation that transparently handles
   both http and https connections, and transparently handles H1 and H2 servers
   over https by doing ALPN negotiation. All of these scenarios are exposed
