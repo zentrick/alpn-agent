@@ -6,12 +6,12 @@ const HeaderList = require('./header-list')
 
 const throwIfInvalidName = name => {
   if (!isHeaderName(name)) {
-    throw new Error('Invalid header name')
+    throw new Error(`Invalid header name: "${name}"`)
   }
 }
 const throwIfInvalidValue = value => {
   if (!isHeaderValue(value)) {
-    throw new Error('Invalid header value')
+    throw new Error(`Invalid header value: "${value}"`)
   }
 }
 

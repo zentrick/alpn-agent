@@ -72,14 +72,6 @@ class HeaderList {
     this._delete(name)
   }
 
-  getDecodeSplit (name) {
-    throw new Error('Not implemented')
-  }
-
-  combine () {
-    throw new Error('Not implemented')
-  }
-
   sortCombine () {
     const headers = []
     const names = []
