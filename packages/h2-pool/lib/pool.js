@@ -1,6 +1,7 @@
 const { connect } = require('@zentrick/h2-pooled-session')
 const debug = require('debug')
 const getName = require('./get-name')
+const getAuthority = require('./get-authority')
 
 const DEBUG = debug('h2::pool')
 
@@ -91,7 +92,7 @@ class Pool {
   }
 
   createSession (authority, options) {
-    DEBUG('create origin', authority)
+    DEBUG('create origin', getAuthority(authority))
     const name = getName(authority, options)
     const tagSession = session => {
       DEBUG('tagging session')
@@ -135,7 +136,7 @@ class Pool {
   }
 
   connect (authority, options) {
-    DEBUG('connect', authority)
+    DEBUG('connect', getAuthority(authority))
     const connectOptions = this._getConnectOptions(authority, options)
     const name = getName(authority, connectOptions)
     let origin = this[_origins].get(name)

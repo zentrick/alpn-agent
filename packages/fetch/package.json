@@ -1,0 +1,36 @@
+{
+  "name": "@zentrick/fetch",
+  "version": "0.0.0",
+  "main": "index.js",
+  "author": "Zentrick nv (https://www.zentrick.com/)",
+  "contributors": [
+    "Pieter Mees <pieter.mees@zentrick.com>"
+  ],
+  "engines": {
+    "node": ">=8"
+  },
+  "license": "MIT",
+  "files": [
+    "lib/",
+    "index.js"
+  ],
+  "repository": "zentrick/alpn-agent",
+  "bugs": "https://github.com/zentrick/alpn-agent/issues",
+  "dependencies": {
+    "@zentrick/h2-alpn": "^0.0.0",
+    "@zentrick/h2-pool": "^0.0.0"
+  },
+  "devDependencies": {},
+  "nyc": {
+    "all": true,
+    "include": [
+      "lib/**/*.js",
+      "index.js"
+    ],
+    "reporter": [
+      "lcov",
+      "text",
+      "text-summary"
+    ]
+  }
+}

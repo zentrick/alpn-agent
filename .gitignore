@@ -1,6 +1,6 @@
 Thumbs.db
 .DS_Store
 /**/node_modules/
-/.nyc_output/
-/coverage/
+/**/.nyc_output/
+/**/coverage/
 yarn-error.log
